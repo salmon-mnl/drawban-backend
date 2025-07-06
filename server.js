@@ -8,7 +8,7 @@ const app = express();
 const port = process.env.PORT || 3001;
 // ✅ ตรงนี้ต้องมาก่อนทุก route
 app.use(cors({
-  origin: "*",
+  origin: "http://localhost:3020",
   credentials: true
 }));
 
