@@ -42,6 +42,11 @@ app.post("/register", async (req, res) => {
 });
 
 // ⏯ Start Server
-connectDB().then(() => {
+connectDB()
+  .then(() => {
     app.listen(port, () => console.log(`🚀 Server running on port ${port}`));
-});
+  })
+  .catch((err) => {
+    console.error("❌ Failed to start server due to DB connection error.");
+    process.exit(1);
+  });

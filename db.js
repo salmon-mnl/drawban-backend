@@ -8,16 +8,17 @@ let db;
 
 async function connectDB() {
     try {
+        console.log("🌐 Connecting to MongoDB...");
         await client.connect();
         db = client.db("members");
         console.log("✅ Connected to MongoDB");
     } catch (err) {
         console.error("❌ MongoDB Connection Error:", err);
+        throw err; // สำคัญ! ต้องโยนออกไปให้ server.js จับ
     }
 }
 
 function getDB() {
-    console.log(db);
     
     if (!db) throw new Error("DB not initialized");
     return db;
