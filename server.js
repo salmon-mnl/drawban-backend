@@ -8,12 +8,7 @@ const app = express();
 const port = process.env.PORT || 3001;
 // ✅ ตรงนี้ต้องมาก่อนทุก route
 app.use(cors({
-    origin: [
-    "http://localhost:3020",                     // ✅ local dev
-    "http://localhost:3020/demo",                // ✅ เพิ่มกรณี path
-    "https://drawban-frontend.onrender.com"      // ✅ deploy จริง
-  ],
-  credentials: true
+    origin: '*'
 }));
 
 app.use(bodyParser.json());
