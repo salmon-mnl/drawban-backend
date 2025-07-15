@@ -4,7 +4,6 @@ require("dotenv").config();
 
 const uri = process.env.MONGODB_URI;
 const client = new MongoClient(uri);
-
 let db;
 
 async function connectDB() {
@@ -18,6 +17,8 @@ async function connectDB() {
 }
 
 function getDB() {
+    console.log(db);
+    
     if (!db) throw new Error("DB not initialized");
     return db;
 }
