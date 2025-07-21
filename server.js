@@ -13,6 +13,10 @@ app.use(cors({
 
 app.use(bodyParser.json());
 
+app.post("/", async (req, res) => {
+    res.status(401).json({ status: "success", msg: "Hello" });
+});
+
 // 🟩 Route: Login
 app.post("/login", async (req, res) => {
     const { username, password } = req.body;
