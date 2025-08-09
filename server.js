@@ -1,51 +1,58 @@
 // server.js
-const express = require("express");
-const bodyParser = require("body-parser");
-require("dotenv").config();
-const { connectDB, getDB } = require("./db");
-const cors = require('cors')
+require('dotenv').config(); // ไม่เป็นไรถ้าจะคงไว้
+const express = require('express');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const { connectDB, getDB } = require('./db');
+
 const app = express();
 const port = 3000;
-// ✅ ตรงนี้ต้องมาก่อนทุก route
-app.use(cors({
-    origin: '*'
-}));
 
+app.use(cors({ origin: true, credentials: true }));
 app.use(bodyParser.json());
 
-app.post("/", async (req, res) => {
-    res.status(401).json({ status: "success", msg: "Hello" });
-});
+// healthcheck
+app.get('/', (_req, res) => res.send('OK'));
+app.get('/healthz', (_req, res) => res.json({ ok: true }));
 
-// 🟩 Route: Login
-app.post("/login", async (req, res) => {
-    const { username, password } = req.body;
-    if (!username || !password) return res.status(400).json({ msg: "Missing fields" });
-
+// 🟩 Login
+app.post('/login', async (req, res) => {
+  try {
     const db = getDB();
-    const user = await db.collection("users").findOne({ username, password });
+    const { username, password } = req.body || {};
+    if (!username || !password) return res.status(400).json({ msg: 'Missing fields' });
 
-    if (user) {
-        res.json({ status: "success", msg: "Login successful" });
-    } else {
-        res.status(401).json({ status: "error", msg: "Invalid credentials" });
-    }
+    const user = await db.collection('users').findOne({ username, password });
+    if (user) return res.json({ status: 'success', msg: 'Login successful' });
+    return res.status(401).json({ status: 'error', msg: 'Invalid credentials' });
+  } catch (e) {
+    console.error('login error:', e.message);
+    return res.status(503).json({ status: 'error', msg: 'DB not ready' });
+  }
 });
 
-// 🟦 Route: Register
-app.post("/register", async (req, res) => {
-    const { username, password } = req.body;
-    if (!username || !password) return res.status(400).json({ msg: "Missing fields" });
-
+// 🟦 Register
+app.post('/register', async (req, res) => {
+  try {
     const db = getDB();
-    const exists = await db.collection("users").findOne({ username });
-    if (exists) return res.status(409).json({ msg: "User already exists" });
+    const { username, password } = req.body || {};
+    if (!username || !password) return res.status(400).json({ msg: 'Missing fields' });
 
-    await db.collection("users").insertOne({ username, password });
-    res.json({ status: "success", msg: "User registered" });
+    const exists = await db.collection('users').findOne({ username });
+    if (exists) return res.status(409).json({ msg: 'User already exists' });
+
+    await db.collection('users').insertOne({ username, password });
+    return res.json({ status: 'success', msg: 'User registered' });
+  } catch (e) {
+    console.error('register error:', e.message);
+    return res.status(503).json({ status: 'error', msg: 'DB not ready' });
+  }
 });
 
-// ⏯ Start Server
-connectDB().then(() => {
-    app.listen(port, () => console.log(`🚀 Server running on port ${port}`));
+// ⏯ เริ่มฟังพอร์ตก่อน แล้วต่อ DB เบื้องหลัง (กัน 502)
+app.listen(port, () => {
+  console.log(`🚀 Server listening on ${port}`);
+  connectDB()
+    .then(() => console.log('DB ready'))
+    .catch(err => console.error('DB connect failed:', err.message));
 });
