@@ -32,7 +32,7 @@ const { MongoClient } = require('mongodb');
 let db;
 
 async function connectDB() {
-  const uri = 'mongodb+srv://drawban:r2HW346CP84142rB@cluster0.unfiqwt.mongodb.net/members';
+  const uri = 'mongodb+srv://drawban:r2HW346CP84142rB@cluster0.unfiqwt.mongodb.net/?retryWrites=true&w=majority&tls=true';
   if (!uri) throw new Error('MONGODB_URI is not set');
 
   // ป้องกันค้างนานเกินไป
