@@ -32,14 +32,14 @@ const { MongoClient } = require('mongodb');
 let db;
 
 async function connectDB() {
-  const uri = 'mongodb+srv://drawban:r2HW346CP84142rB@cluster0.unfiqwt.mongodb.net/members?retryWrites=true&w=majority&tls=true';
+  const uri = 'mongodb+srv://drawban:r2HW346CP84142rB@cluster0.unfiqwt.mongodb.net/members';
   if (!uri) throw new Error('MONGODB_URI is not set');
 
   // ป้องกันค้างนานเกินไป
   const client = new MongoClient(uri, { serverSelectionTimeoutMS: 8000 });
   await client.connect();
 
-  const dbName = process.env.MONGODB_DB || 'members';
+  const dbName = 'members';
   db = client.db(dbName);
   console.log('✅ Mongo connected:', dbName);
 }
